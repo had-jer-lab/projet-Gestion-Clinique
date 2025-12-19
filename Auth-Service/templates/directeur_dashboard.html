@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directeur - Clinique</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-gray-50">
+ <!-- BUTTON (always visible) -->
+<button onclick="toggleSidebar()"
+class="fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 px-3 rounded-lg shadow-md">
+☰
+</button>
+
+<!-- SIDEBAR -->
+<div id="sidebar"
+class="fixed left-0 top-0 h-full w-56 bg-white shadow-xl p-5 transform -translate-x-full transition-all duration-300 z-40">
+
+<h2 class="text-xl font-bold mb-5">Directeur</h2>
+<!-- Profile utilisateur -->
+<div class="flex flex-col items-center mb-8">
+  <img src="https://th.bing.com/th/id/OIP.03v_p9o8qmfvTR03olZGswHaE_?w=230&h=180&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="Avatar" class="w-20 h-20 rounded-full mb-2">
+  <h3 class="text-lg font-bold text-gray-800">{{ user.nom }} {{ user.prenom }}</h3>
+  <p class="text-sm text-gray-500">{{ user.role }}</p>
+</div>
+
+<h2 class="text-xl font-bold mb-5">Directeur</h2>
+<ul class="space-y-3 text-base">
+<li><a href="/directeur/dashboard" class="hover:text-blue-600">🏠 Tableau de bord</a></li>
+<li><a href="http://100.83.82.128:5001" class="hover:text-blue-600">👥 Patients</a></li>
+<li><a href="http://100.125.192.97:5005/factures" class="hover:text-blue-600">💰 Factures</a></li>
+<li><a href="http://100.95.250.126:5003/espace_doctor" class="hover:text-blue-600">🧑‍⚕️ Médecins</a></li>
+<li><a href="/logout" class="text-red-600 font-bold hover:underline">🚪 Déconnexion</a></li>
+</ul>
+</div>
+<div class="p-8 lg:p-12 max-w-7xl mx-auto">
+  <h1 class="text-4xl font-bold text-gray-800 mb-2">Tableau de Bord du Directeur</h1>
+  <p class="text-gray-600 mb-10">Vue d'ensemble des indicateurs clés et des performances de la clinique.</p>
+ 
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <p class="text-gray-600">Médecins Actifs</p>
+      <p class="text-4xl font-bold text-blue-600" id="nb-medecins">0</p>
+      <p class="text-sm text-green-600">Mise à jour en temps réel</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow">
+      <p class="text-gray-600">Secrétaires</p>
+      <p class="text-4xl font-bold text-purple-600" id="nb-secretaires">0</p>
+      <p class="text-sm text-gray-500">Administrateurs actifs</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow">
+      <p class="text-gray-600">Factures Payées</p>
+      <p class="text-4xl font-bold text-green-600" id="total-factures">0</p>
+      <p class="text-sm text-green-600">Année en cours</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow">
+      <p class="text-gray-600">Ordonnances Créées</p>
+      <p class="text-4xl font-bold text-orange-600">2</p>
+      
+    </div>
+  </div>
+ 
+  <!-- Revenu Global + Graphique -->
+  <div class="bg-white p-8 rounded-xl shadow mb-10">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800">Revenu Global</h2>
+      <button id="btn-historique" class="mt-4 sm:mt-0 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition shadow-lg">
+        Voir l'historique complet
+      </button>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div class="text-center lg:text-left">
+        <p class="text-5xl lg:text-6xl font-extrabold text-gray-800" id="revenu-total">0 دج</p>
+        <p class="text-xl text-green-600 mt-3 font-medium">Revenus de l'année en cours</p>
+        <p class="text-lg text-gray-600 mt-6">
+          <span id="total-factures2" class="font-bold text-2xl text-green-700">0</span> factures payées
+        </p>
+      </div>
+      <div class="w-full h-80 lg:h-96">
+        <canvas id="chart"></canvas>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Gestion des comptes administratifs -->
+  <div class="bg-white p-8 rounded-xl shadow">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold">Gestion des comptes administratifs</h2>
+      <button onclick="openAddModal()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">+ Ajouter un compte</button>
+    </div>
+    <table class="w-full text-left" id="admin-table">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-4">Rôle</th>
+          <th class="px-6 py-4">Nom</th>
+          <th class="px-6 py-4">Email</th>
+          <th class="px-6 py-4">Mot de passe</th>
+          <th class="px-6 py-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="admin-body">
+        <!-- يتم ملؤه تلقائيًا من قاعدة البيانات -->
+      </tbody>
+    </table>
+  </div>
+</div>
+ 
+<!-- Modal للإضافة والتعديل -->
+<div id="adminModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-8 w-96">
+    <h3 id="modalTitle" class="text-2xl font-bold mb-6">Ajouter un compte</h3>
+    <input type="hidden" id="editId">
+    <div class="space-y-4">
+      <input type="text" id="nom" placeholder="Nom complet" class="w-full px-4 py-2 border rounded-lg">
+      <input type="email" id="email" placeholder="Email" class="w-full px-4 py-2 border rounded-lg">
+      <input type="password" id="password" placeholder="Mot de passe" class="w-full px-4 py-2 border rounded-lg">
+      <select id="role" class="w-full px-4 py-2 border rounded-lg">
+        <option value="Directeur">Directeur</option>
+        <option value="Secrétaire">Secrétaire</option>
+      </select>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Annuler</button>
+      <button onclick="saveAdmin()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Enregistrer</button>
+    </div>
+  </div>
+</div>
+ 
+<script>
+
+ 
+async function loadAllData() {
+    // جلب عدد الأطباء
+    fetch('/api/doctors-count')
+      .then(r => r.json())
+      .then(d => document.getElementById('nb-medecins').textContent = d.count);
+ 
+    // جلب الحسابات من قاعدة البيانات
+    const res = await fetch('/api/admins');
+    const admins = await res.json();
+    const tbody = document.getElementById('admin-body');
+    tbody.innerHTML = '';
+    admins.forEach(a => {
+        tbody.innerHTML += `
+        <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-4">${a.role}</td>
+            <td class="px-6 py-4 font-medium">${a.nom}</td>
+            <td class="px-6 py-4">${a.email}</td>
+            <td class="px-6 py-4">••••••</td>
+            <td class="px-6 py-4">
+                <button onclick="editAdmin(${a.id}, \`${a.nom}\`, '${a.email}', '${a.password}', '${a.role}')" class="text-blue-600 hover:underline mr-4">Modifier</button>
+                <button onclick="deleteAdmin(${a.id})" class="text-red-600 hover:underline">Supprimer</button>
+            </td>
+        </tr>`;
+    });
+    document.getElementById('nb-secretaires').textContent = admins.filter(x => x.role === 'Secrétaire').length;
+}
+ 
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Ajouter un compte';
+    document.getElementById('editId').value = '';
+    document.getElementById('nom').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('role').value = 'Secrétaire';
+    document.getElementById('adminModal').classList.remove('hidden');
+}
+ 
+function editAdmin(id, nom, email, password, role) {
+    document.getElementById('modalTitle').textContent = 'Modifier le compte';
+    document.getElementById('editId').value = id;
+    document.getElementById('nom').value = nom;
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = password;
+    document.getElementById('role').value = role;
+    document.getElementById('adminModal').classList.remove('hidden');
+}
+ 
+async function saveAdmin() {
+    const id = document.getElementById('editId').value;
+    const nom = document.getElementById('nom').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('role').value;
+ 
+    if (!nom || !email || !password) return alert("Tous les champs sont obligatoires");
+ 
+    const payload = { nom, email, password, role };
+    if (id) payload.id = id;
+ 
+    try {
+        const url = id ? '/api/admins/update' : '/api/admins/add';
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+ 
+        if (data.success) {
+            alert("✅ Compte enregistré avec succès !");
+            closeModal();
+            loadAllData();
+        } else {
+            alert("❌ Erreur: " + (data.error || "Problème inconnu"));
+        }
+    } catch (err) {
+        alert("❌ Erreur de connexion ou serveur: " + err.message);
+    }
+}
+ 
+async function deleteAdmin(id) {
+    if (confirm('Supprimer ce compte définitivement ?')) {
+        await fetch(`/api/admins/delete/${id}`, { method: 'DELETE' });
+        loadAllData();
+    }
+}
+ 
+function closeModal() {
+    document.getElementById('adminModal').classList.add('hidden');
+}
+ 
+document.addEventListener('DOMContentLoaded', loadAllData);
+</script>
+<script>
+  // جلب الإحصائيات من الهاجؤ (Factures)
+  fetch('http://100.95.250.126:5004/stats')
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('total-factures').textContent = data.total_factures;
+      document.getElementById('revenu-total').textContent = '€' + data.revenu_total.toLocaleString();
+    });
+
+
+    // Historique 
+
+document.getElementById('btn-historique').addEventListener('click', () => { 
+
+fetch('http://100.125.192.97:5005/stats/historique') 
+
+  .then(r => r.json()) 
+
+  .then(years => { 
+
+    let table = `<table class="min-w-full bg-white border rounded-lg shadow"> 
+
+      <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white"> 
+
+        <tr><th class="px-6 py-4 text-left">Année</th><th class="px-6 py-4 text-right">Total (دج)</th> 
+
+        <th>Jan</th><th>Fév</th><th>Mar</th><th>Avr</th><th>Mai</th><th>Juin</th> 
+
+        <th>Juil</th><th>Aoû</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Déc</th></tr></thead><tbody class="text-gray-700">`; 
+
+    years.forEach(y => { 
+
+      table += `<tr class="border-b hover:bg-gray-50"> 
+
+        <td class="px-6 py-4 font-bold text-blue-700">${y.annee}</td> 
+
+        <td class="px-6 py-4 text-right font-bold text-green-600">${y.total.toLocaleString('fr-DZ')} دج</td>`; 
+
+      y.mensuel.forEach(m => table += `<td class="px-4 py-3 text-right">${m > 0 ? m.toLocaleString('fr-DZ') + ' دج' : '—'}</td>`); 
+
+      table += `</tr>`; 
+
+    }); 
+
+    table += `</tbody></table>`; 
+
+
+
+    const modal = document.createElement('div'); 
+
+    modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4'; 
+
+    modal.innerHTML = `<div class="bg-white rounded-2xl shadow-2xl max-w-7xl w-full max-h-screen overflow-auto"> 
+
+      <div class="sticky top-0 bg-white border-b px-8 py-6 flex justify-between items-center"> 
+
+        <h3 class="text-3xl font-bold text-gray-800">Historique des revenus (دج)</h3> 
+
+        <button class="text-4xl text-gray-500 hover:text-gray-800">&times;</button> 
+
+      </div><div class="p-8">${table}</div></div>`; 
+
+    modal.querySelector('button').onclick = () => modal.remove(); 
+
+    document.body.appendChild(modal); 
+
+  }); 
+
+}); 
+
+</script>
+<script>
+  function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+   
+      if (sidebar.classList.contains("-translate-x-full")) {
+          sidebar.classList.remove("-translate-x-full");
+      } else {
+          sidebar.classList.add("-translate-x-full");
+      }
+  }
+  </script>
+  <script>
+    let chartInstance = null;
+     
+    function loadFactureStats() {
+        fetch("http://100.125.192.97:5005/stats")
+            .then(r => r.json())
+            .then(data => {
+     
+                // ✔ تحديث عدد الفواتير
+                document.getElementById("total-factures").textContent = data.total_factures;
+                document.getElementById("total-factures2").textContent = data.total_factures;
+     
+                // ✔ تحديث المبلغ الإجمالي
+                document.getElementById("revenu-total").textContent =
+                    data.revenu_total.toLocaleString('fr-DZ') + " دج";
+     
+                // ✔ رسم البياني
+                if (chartInstance) chartInstance.destroy();
+     
+                const ctx = document.getElementById("chart").getContext("2d");
+     
+                chartInstance = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+                                 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                        datasets: [{
+                            label: `Revenu ${data.annee_courante}`,
+                            data: data.revenus_mensuels,
+                            backgroundColor: "rgba(34,197,94,0.85)",
+                            borderColor: "#16a34a",
+                            borderWidth: 2,
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            })
+            .catch(err => console.error("Erreur stats:", err));
+    }
+     
+    // ---------------------------
+    // زر الهستوريك
+    // ---------------------------
+    document.getElementById("btn-historique").addEventListener("click", () => {
+        fetch("http://100.125.192.97:5005/stats/historique")
+            .then(r => r.json())
+            .then(years => {
+     
+                let table = `<table class="min-w-full bg-white border rounded-lg shadow">
+                    <thead class="bg-blue-700 text-white">
+                      <tr>
+                        <th class="px-6 py-4">Année</th>
+                        <th class="px-6 py-4">Total (دج)</th>
+                        <th>Jan</th><th>Fév</th><th>Mar</th><th>Avr</th><th>Mai</th><th>Juin</th>
+                        <th>Juil</th><th>Aoû</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Déc</th>
+                      </tr>
+                    </thead><tbody>`;
+     
+                years.forEach(y => {
+                    table += `<tr class="border-b">
+                        <td class="px-6 py-4 font-bold">${y.annee}</td>
+                        <td class="px-6 py-4 text-green-600 font-bold">${y.total.toLocaleString('fr-DZ')} دج</td>`;
+                    y.mensuel.forEach(m => {
+                        table += `<td class="px-3 py-2 text-right">${m ? m.toLocaleString('fr-DZ') + ' دج' : '—'}</td>`;
+                    });
+                    table += `</tr>`;
+                });
+     
+                table += `</tbody></table>`;
+     
+                const modal = document.createElement('div');
+                modal.className = "fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50";
+     
+                modal.innerHTML = `
+                    <div class="bg-white rounded-xl max-w-5xl w-full overflow-auto">
+                      <div class="flex justify-between items-center px-6 py-4 border-b">
+                        <h3 class="text-2xl font-bold">Historique des revenus</h3>
+                        <button class="text-3xl">&times;</button>
+                      </div>
+                      <div class="p-6">${table}</div>
+                    </div>`;
+                
+                modal.querySelector("button").onclick = () => modal.remove();
+                document.body.appendChild(modal);
+            });
+    });
+     
+    // ✔ تحميل عند فتح الصفحة
+    document.addEventListener("DOMContentLoaded", () => {
+        loadFactureStats();
+    });
+    </script>
+</body>
+</html>
+ 

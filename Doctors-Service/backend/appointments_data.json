@@ -1,0 +1,18 @@
+[
+  {
+    "heure": "09:00",
+    "patient": "Ahmed Benali",
+    "patient_id": 1,
+    "medecin": 1,
+    "motif": "Consultation générale",
+    "statut": "Confirmé"
+  },
+  {
+    "heure": "10:30",
+    "patient": "Fatima Meziane",
+    "patient_id": 2,
+    "medecin": 2,
+    "motif": "Contrôle pédiatrique",
+    "statut": "EN ATTENTE"
+  }
+]

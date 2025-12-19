@@ -1,0 +1,127 @@
+services:
+  # ========================
+  # AUTH SERVICE (Dounia)
+  # ========================
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5009:5009"
+    environment:
+      - FLASK_ENV=production
+      - USE_DOCKER=true
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5009
+      - FLASK_DEBUG=false
+      - SECRET_KEY=clinique2025_auth_secret
+      - PATIENTS_SERVICE_URL=http://patients-backend:5001
+      - DOCTORS_SERVICE_URL=http://doctors-service:5000
+      - RDV_SERVICE_URL=http://rdv-backend:5005
+    volumes:
+      - auth-data:/app/instance
+    networks:
+      - medical-network
+    restart: unless-stopped
+
+  # ========================
+  # PATIENTS SERVICE (Asma)
+  # ========================
+  patients-backend:
+    build: ./patient-service/backend
+    container_name: patients-backend
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+      - USE_DOCKER=true
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5001
+      - FLASK_DEBUG=false
+      - SECRET_KEY=clinique2025_patients_secret
+      - AUTH_SERVICE_URL=http://auth-service:5009
+      - DOCTORS_SERVICE_URL=http://doctors-service:5000
+      - RDV_SERVICE_URL=http://rdv-backend:5005
+    volumes:
+      - patients-data:/app/instance
+      - patients-uploads:/app/static/uploads
+    depends_on:
+      - auth-service
+    networks:
+      - medical-network
+    restart: unless-stopped
+
+  patients-frontend:
+    build: ./patient-service/frontend
+    container_name: patients-frontend
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5001/api
+    depends_on:
+      - patients-backend
+    networks:
+      - medical-network
+    restart: unless-stopped
+
+  # ========================
+  # RDV BACKEND (Hajer)
+  # ========================
+  rdv-backend:
+    build: ./RDV-serviceIHM/backend
+    container_name: rdv-backend
+    ports:
+      - "5005:5005"
+    environment:
+      - FLASK_ENV=production
+      - USE_DOCKER=true
+      - AUTH_SERVICE_URL=http://auth-service:5009
+      - PATIENTS_SERVICE_URL=http://patients-backend:5001
+      - DOCTORS_SERVICE_URL=http://doctors-service:5000
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5005
+      - FLASK_DEBUG=false
+      - SECRET_KEY=clinique2025_rdv_secret
+    volumes:
+      - rdv-data:/app/instance
+    depends_on:
+      - auth-service
+      - patients-backend
+    networks:
+      - medical-network
+    restart: unless-stopped
+
+  rdv-frontend:
+    build: ./RDV-serviceIHM/frontend
+    container_name: rdv-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5005/api
+    depends_on:
+      - rdv-backend
+    networks:
+      - medical-network
+    restart: unless-stopped
+
+# ========================
+# NETWORKS
+# ========================
+networks:
+  medical-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+# ========================
+# VOLUMES
+# ========================
+volumes:
+  auth-data:
+    driver: local
+  patients-data:
+    driver: local
+  patients-uploads:
+    driver: local
+  rdv-data:
+    driver: local

@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Benali",
+    "speciality": "Médecine Générale",
+    "status": "Disponible",
+    "patients": 45
+  },
+  {
+    "id": 2,
+    "name": "Meziane",
+    "speciality": "Pédiatrie",
+    "status": "En Consultation",
+    "patients": 38
+  },
+  {
+    "id": 3,
+    "name": "larabi",
+    "speciality": "Cardiologue",
+    "status": "Disponible",
+    "patients": 0
+  },
+  {
+    "id": 4,
+    "name": "larabi",
+    "speciality": "Cardiologue",
+    "status": "Disponible",
+    "patients": 0
+  }
+]

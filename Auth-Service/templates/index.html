@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clinique - Connexion / Inscription</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+ 
+  <!-- تعديل بسيط للـ Modal -->
+  <style>
+    #forgot-modal {
+      display: none; /* مخفي في البداية */
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.7);
+      z-index:9999;
+      justify-content: center;
+      align-items: center;
+    }
+    #forgot-modal.show { display: flex !important; }
+    .modal-content {
+      background: white; padding:30px; border-radius:12px;
+      width:90%; max-width:420px; position:relative;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    }
+    .modal-content h3 { margin:0 0 20px 0; font-size:22px; text-align:center; }
+    .modal-content input { width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:6px; font-size:16px; }
+    .modal-content button { width:100%; padding:12px; margin-top:10px; background:#007bff; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer; }
+    .modal-content button:hover { background:#0056b3; }
+    .modal-content .close { position:absolute; top:10px; right:15px; font-size:30px; cursor:pointer; color:#aaa; }
+    .modal-content .close:hover { color:#000; }
+    #verify-code-section, #reset-password-section { margin-top:20px; display:none; }
+  </style>
+</head>
+<body>
+ 
+<div class="main-container">
+  <!-- Left: Illustration -->
+  <div class="left-panel">
+    <img src="{{ url_for('static', filename='Média (1).jfif') }}" alt="Docteur et patient" class="illustration-img">
+  </div>
+ 
+  <!-- Right: Form -->
+  <div class="right-panel">
+    <div class="form-box">
+      <div class="logo">
+        <div class="‐logo-icon"></div>
+        <h1>Clinique</h1>
+      </div>
+      <p class="subtitle">Bienvenue sur Clinique<br>
+        <span>Connectez-vous pour accéder à votre espace de gestion clinique.</span>
+      </p>
+ 
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Connexion</button>
+        <button class="tab" onclick="switchTab('signup')">Créer un Compte</button>
+      </div>
+ 
+      <!-- Login Form -->
+      <form id="login-form" class="form-content active" action="/login" method="POST">
+        <input type="hidden" name="form_type" value="login">
+        <div class="input-group">
+          <label>Nom d'utilisateur / Email</label>
+          <input type="email" name="email" placeholder="john.doe@example.com" required />
+        </div>
+        <div class="input-group">
+          <label>Mot de passe</label>
+          <input type="password" name="password" placeholder="Mot de passe ?" required />
+          <a href="#" class="forgot" id="forgot-link">Mot de passe oublié ?</a>
+        </div>
+        <button type="submit" class="btn-primary">Se connecter</button>
+      </form>
+ 
+      <!-- Signup Form -->
+      <form id="signup-form" class="form-content" action="/login" method="POST">
+        <input type="hidden" name="form_type" value="signup">
+        <div class="input-group">
+          <label>Nom</label>
+          <input type="text" name="nom" placeholder="Nom du médecin" required />
+        </div>
+        <div class="input-group">
+          <label>Prénom</label>
+          <input type="text" name="prenom" placeholder="Prénom du médecin" required />
+        </div>
+        <div class="input-group">
+          <label>Numéro de téléphone</label>
+          <input type="tel" name="telephone" placeholder="Téléphone professionnel" required />
+        </div>
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="Adresse de contact" required />
+        </div>
+        <div class="input-group">
+          <label>Mot de passe</label>
+          <input type="password" name="password" placeholder="Clé d’accès (8 caractères min)" minlength="8" required />
+        </div>
+        <div class="input-group">
+          <label>Spécialité</label>
+          <input type="text" name="specialite" placeholder="Domaine médical" required />
+        </div>
+        <button type="submit" class="btn-primary">Créer un compte</button>
+        <p class="footer-link">Déjà un compte ? <a href="#" onclick="switchTab('login')">Se connecter</a></p>
+      </form>
+ 
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, msg in messages %}
+              <div class="flash {{ category }}">{{ msg }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</div>
+ 
+<!-- Modal Mot de passe oublié -->
+<div id="forgot-modal">
+  <div class="modal-content">
+    <span class="close" id="close-forgot">&times;</span>
+    <h3>Réinitialiser le mot de passe</h3>
+    <p>Entrez votre email pour recevoir un code de confirmation :</p>
+    <input type="email" id="forgot-email" placeholder="votre@email.com" required />
+    <button id="send-code-btn">Envoyer le code</button>
+ 
+    <div id="verify-code-section">
+      <p>Entrez le code à 6 chiffres reçu :</p>
+      <input type="text" id="verify-code-input" maxlength="6" placeholder="••••••" />
+      <button id="verify-code-btn">Vérifier le code</button>
+    </div>
+ 
+    <div id="reset-password-section">
+      <p>Entrez votre nouveau mot de passe :</p>
+      <input type="password" id="new-password" placeholder="Nouveau mot de passe" />
+      <button id="reset-password-btn">Réinitialiser le mot de passe</button>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  // Switch Tabs
+  function switchTab(tab) {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    if(tab==='login'){ loginForm.classList.remove('hidden'); signupForm.classList.add('hidden'); }
+    else{ loginForm.classList.add('hidden'); signupForm.classList.remove('hidden'); }
+  }
+ 
+  // Modal Forgot Password
+  const modal = document.getElementById('forgot-modal');
+  const link = document.getElementById('forgot-link');
+  const close = document.getElementById('close-forgot');
+  link.onclick = e => { e.preventDefault(); modal.classList.add('show'); };
+  close.onclick = () => modal.classList.remove('show');
+  modal.onclick = e => { if(e.target===modal) modal.classList.remove('show'); };
+ 
+  // Envoyer le code
+  document.getElementById('send-code-btn').onclick = () => {
+    const email = document.getElementById('forgot-email').value.trim();
+    if(!email || !email.includes('@')) return alert("Veuillez entrer un email valide");
+    window.forgotEmail = email;
+    window.code = Math.floor(100000 + Math.random()*900000);
+    alert("Code envoyé !\n\n" + window.code);
+    document.getElementById('verify-code-section').style.display='block';
+  };
+ 
+  // Vérifier le code
+  document.getElementById('verify-code-btn').onclick = () => {
+    const inputCode = document.getElementById('verify-code-input').value.trim();
+    if(inputCode === String(window.code)){
+      alert("Code correct ! Veuillez entrer votre nouveau mot de passe.");
+      document.getElementById('verify-code-section').style.display='none';
+      document.getElementById('reset-password-section').style.display='block';
+    } else { alert("Code incorrect"); }
+  };
+ 
+  // Réinitialiser le mot de passe
+  document.getElementById('reset-password-btn').onclick = () => {
+    const newPass = document.getElementById('new-password').value.trim();
+    if(!newPass) return alert("Veuillez entrer votre nouveau mot de passe");
+    fetch('/api/reset-password', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:window.forgotEmail,new_password:newPass})
+    }).then(res=>res.json()).then(data=>{
+      if(data.success){
+        alert("Mot de passe réinitialisé avec succès !");
+        modal.classList.remove('show');
+        document.getElementById('forgot-email').value='';
+        document.getElementById('verify-code-input').value='';
+        document.getElementById('new-password').value='';
+        document.getElementById('reset-password-section').style.display='none';
+      } else { alert("Erreur: "+data.error); }
+    }).catch(err=>alert("Erreur: "+err));
+  };
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

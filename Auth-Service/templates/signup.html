@@ -1,0 +1,101 @@
+<!-- templates/signup.html - Unified French interface with logo, texts, tabs, and doctor fields -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clinique- Connexion / Inscription</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="main-container">
+<!-- Left: Illustration -->
+<div class="left-panel">
+<img src="https://via.placeholder.com/480x600/FCE4EC/007BFF?text=Docteur+et+Patient" alt="Docteur et patient" class="illustration-img">
+</div>
+<!-- Right: Form -->
+<div class="right-panel">
+<div class="form-box">
+<div class="logo">
+<div class="logo-icon"></div>
+<h1>Clinique</h1>
+</div>
+<p class="subtitle">Bienvenue sur Clinique<br>
+<span>Connectez-vous pour accéder à votre espace de gestion clinique.</span>
+</p>
+<!-- Tabs -->
+<div class="tabs">
+<button class="tab active" onclick="switchTab('login')">Connexion</button>
+<button class="tab" onclick="switchTab('signup')">Créer un Compte</button>
+</div>
+<!-- Login Form -->
+<form id="login-form" class="form-content active" action="/" method="POST" enctype="multipart/form-data">
+<input type="hidden" 
+name="form_type" value="login">
+<div class="input-group">
+<label>Nom d'utilisateur / Email</label>
+<input type="email" name="email" placeholder="john.doe@example.com" required />
+</div>
+<div class="input-group">
+<label>Mot de passe</label>
+<input type="password" name="password" placeholder="Mot de passe ?" required />
+<a href="#" class="forgot">Mot de passe oublié ?</a>
+</div>
+<button type="submit" class="btn-primary">Se connecter</button>
+</form>
+<!-- Signup Form with Doctor Fields, Logo, and Texts -->
+<form id="signup-form" class="form-content" action="/" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="form_type" value="signup">
+<div class="input-group">
+<label>Nom</label>
+<input type="text" name="nom" placeholder="Nom du médecin" required />
+</div>
+<div class="input-group">
+<label>Prénom</label>
+<input type="text" name="prenom" placeholder="Prénom du médecin" required />
+</div>
+<div class="input-group">
+<label>Âge</label>
+<input type="number" name="age" placeholder="Âge" min="18" required />
+</div>
+<div class="input-group">
+<label>Numéro de téléphone</label>
+<input type="tel" name="telephone" placeholder="Téléphone professionnel" required />
+</div>
+<div class="input-group">
+<label>Email</label>
+<input type="email" name="email" placeholder="Adresse de contact" required />
+</div>
+<div class="input-group">
+<label>Mot de passe</label>
+<input type="password" name="password" placeholder="Clé d’accès (8 caractères min)" minlength="8" required />
+</div>
+<div class="input-group">
+<label>Spécialité</label>
+<input type="text" name="specialite" placeholder="Domaine médical" required />
+</div>
+<div class="input-group">
+<label>Certificat médical</label>
+<input type="file" name="certificat" accept=".pdf,.jpg,.png" required />
+<small>Document justificatif de qualification (PDF, JPG, PNG)</small>
+</div>
+<button type="submit" class="btn-primary">Créer un compte</button>
+<p class="footer-link">Déjà un compte ? <a href="#" onclick="switchTab('login')">Se connecter</a></p>
+</form>
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages">
+{% for category, msg in messages %}
+<div class="flash {{ category }}">{{ msg }}</div>
+{% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+</div>
+</div>
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

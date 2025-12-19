@@ -1,0 +1,271 @@
+/* Reset */
+* {
+    margin: 3;
+    padding: 3;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background: #F8F9FA;
+    color: #333;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ====================== الواجهة الفرنسية ====================== */
+.main-container {
+    display: flex;
+    width: 1050px;   /* بدل 960px */
+    height: 560px;   /* بدل 500px */
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(242, 236, 236, 0.055);
+    border: 1px solid #E5E7EB;
+}
+.left-panel {
+    flex: 1;
+    background: linear-gradient(145deg, #FDF2F8 0%, #EBF8FF 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.illustration-img {
+    width: 100%;
+    max-width: 400px; /* بدل 450px */
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+.right-panel {
+    flex: 1;
+    padding: 45px 40px; /* بدل 60px 50px */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.form-box {
+    max-width: 360px;
+    margin: 0 auto;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    background: #007BFF;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+.logo h1 {
+    font-size: 22px;
+    color: #007BFF;
+    font-weight: 700;
+}
+.subtitle {
+    font-size: 13.5px;
+    color: #6B7280;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+.subtitle span {
+    color: #4B5563;
+    font-weight: 500;
+}
+.tabs {
+    display: flex;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #E5E7EB;
+}
+.tab {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #9CA3AF;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.tab.active {
+    color: #007BFF;
+    border-bottom: 3px solid #007BFF;
+}
+.input-group {
+    margin-bottom: 18px;
+    position: relative;
+}
+.input-group label {
+    display: block;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.input-group input {
+    width: 100%;
+    padding: 12px 12px;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 0px;
+    font-size: 14px;
+    transition: border 0.3s;
+}
+.input-group input:focus {
+    outline: none;
+    border-color: #007BFF;
+}
+.forgot {
+    position: absolute;
+    right: 0;
+    top: 38px;
+    font-size: 12.5px;
+    color: #007BFF;
+    text-decoration: none;
+}
+.btn-primary {
+    width: 100%;
+    padding: 13px;
+    background: #007BFF;
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.3s;
+}
+.btn-primary:hover {
+    background: #0056b3;
+}
+.form-content {
+    display: none;
+}
+.form-content.active {
+    display: block;
+}
+.flash-messages {
+    margin-top: 20px;
+}
+.flash {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.flash.success { background: #D1FAE5; color: #065F46; }
+.flash.error { background: #FEE2E2; color: #991B1B; }
+
+/* ====================== الواجهة الإنجليزية ====================== */
+.english-body {
+    background: #F0F4F8;
+}
+.english-container {
+    display: flex;
+    gap: 24px;              /* بدل 32px */
+    justify-content: center; /* توسيط البطاقات */
+    align-items: flex-start;
+}
+.card {
+    background: rgb(171, 183, 235);
+    padding: 28px;          /* بدل 36px */
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+    width: 340px;           /* بدل 380px */
+    border: 1px solid #E5E7EB;
+}
+.card h2 {
+    font-size: 21px;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+.english-container input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.english-container input::placeholder {
+    color: #9CA3AF;
+}
+.footer-link {
+    text-align: center;
+    margin-top: 2px;
+    font-size: 13.5px;
+    color: #6B7280;
+}
+.footer-link a {
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* ====================== تحسين النموذج الصغير (signup) ====================== */
+small {
+    display: block;
+    font-size: 12px;
+    color: #6B7280;
+    margin-top: 4px;
+}
+#signup-form .input-group {
+    margin-bottom: 10px;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#signup-form .input-group label {
+    font-size: 11.8px;
+    margin-bottom: 3px;
+    color: #4B5563;
+}
+#signup-form .input-group input {
+    padding: 6px 10px;
+    font-size: 12.8px;
+    border: 1px solid #CED4DA;
+    border-radius: 6px;
+}
+#signup-form .input-group input:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+#signup-form .btn-primary {
+    padding: 10px;
+    font-size: 13.8px;
+    margin-top: 8px;
+    border-radius: 6px;
+}
+#signup-form .footer-link {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6B7280;
+}
+#signup-form .footer-link a {
+    font-size: 12px;
+    font-weight: 500;
+}
+#signup-form {
+    padding: 0 3px;
+}
+.illustration-img {
+    width: 500%;
+    max-width: 550px; /* يمكنك تغيير الرقم حسب رغبتك */
+    border-radius: 0px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    height:550px;
+}
